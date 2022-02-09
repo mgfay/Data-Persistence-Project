@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class MainManager : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class MainManager : MonoBehaviour
     public GameObject GameOverText;
     
     private bool m_Started = false;
-    private int m_Points;
+    private float m_Points;
     
     private bool m_GameOver = false;
     public Text disName;
@@ -70,16 +71,52 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+        if (m_Points > Title.Instance.highScore)
+        {
+            Title.Instance.highScore = m_Points;
+
+
+
+        }
     }
 
     public void GameOver()
     {
+        Title.Instance.SaveHighScore();
+        Title.Instance.SaveName();
         m_GameOver = true;
         GameOverText.SetActive(true);
         
-        if (m_Points > Title.Instance.highScore)
-        {
-            Title.Instance.highScore = m_Points;
-        }
+        
+    }
+    public void Exit()
+    {
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+        Title.Instance.SaveName();
+        Title.Instance.SaveHighScore();
+#else
+        Application.Quit(); // original code to quit Unity player
+#endif
+    }
+    public void SaveNameEntered()
+    {
+        Title.Instance.SaveName();
+    }
+
+    public void LoadNameEntered()
+    {
+        Title.Instance.LoadPlayerName();
+        
+    }
+    public void SaveScore()
+    {
+        Title.Instance.SaveHighScore();
+    }
+
+    public void LoadScore()
+    {
+        Title.Instance.LoadHighScore();
+      
     }
 }
